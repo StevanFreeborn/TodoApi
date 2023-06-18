@@ -1,0 +1,4 @@
+{
+  "dotnet.defaultSolution": "TodoApi.sln",
+  "cSpell.words": ["Todos"]
+}
