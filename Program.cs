@@ -47,42 +47,51 @@ app.MapGet(
     : Results.NotFound()
 );
 
-app.MapPost("/todos", async (Todo todo, TodoDb db) =>
-{
-  db.Todos.Add(todo);
-  await db.SaveChangesAsync();
-  return Results.Created($"/todos/{todo.Id}", todo);
-});
-
-app.MapPut("/todos/{id}", async (int id, Todo inputTodo, TodoDb db) =>
-{
-  var todo = await db.Todos.FindAsync(id);
-
-  if (todo is null)
+app.MapPost(
+  "/todos", 
+  async (Todo todo, TodoDb db) =>
   {
-    return Results.NotFound();
+    db.Todos.Add(todo);
+    await db.SaveChangesAsync();
+    return Results.Created($"/todos/{todo.Id}", todo);
   }
+);
 
-  todo.Name = inputTodo.Name;
-  todo.IsComplete = inputTodo.IsComplete;
-
-  await db.SaveChangesAsync();
-
-  return Results.Ok(todo);
-});
-
-app.MapDelete("/todos/{id}", async (int id, TodoDb db) =>
-{
-  var todo = await db.Todos.FindAsync(id);
-
-  if (todo is null)
+app.MapPut(
+"/todos/{id}", 
+  async (int id, Todo inputTodo, TodoDb db) =>
   {
-    return Results.NotFound();
+    var todo = await db.Todos.FindAsync(id);
+  
+    if (todo is null)
+    {
+      return Results.NotFound();
+    }
+  
+    todo.Name = inputTodo.Name;
+    todo.IsComplete = inputTodo.IsComplete;
+  
+    await db.SaveChangesAsync();
+  
+    return Results.Ok(todo);
   }
+);
 
-  db.Todos.Remove(todo);
-  await db.SaveChangesAsync();
-  return Results.NoContent();
-});
+app.MapDelete(
+  "/todos/{id}", 
+  async (int id, TodoDb db) =>
+  {
+    var todo = await db.Todos.FindAsync(id);
+  
+    if (todo is null)
+    {
+      return Results.NotFound();
+    }
+  
+    db.Todos.Remove(todo);
+    await db.SaveChangesAsync();
+    return Results.NoContent();
+  }
+);
 
 app.Run();
